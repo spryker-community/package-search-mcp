@@ -14,9 +14,9 @@
 import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js";
 import {StdioServerTransport} from "@modelcontextprotocol/sdk/server/stdio.js";
 import {z} from "zod";
-import dotenv from 'dotenv';
-import {createLogger} from './logger.js';
-import {searchSprykerPackages} from './tools.js';
+import dotenv from "dotenv";
+import {createLogger} from "./logger.js";
+import {searchSprykerPackages, searchSprykerCode} from "./tools.js";
 
 dotenv.config();
 
@@ -28,7 +28,7 @@ const server = new McpServer({
     description: `The tool provides search capabilities for the Spryker packages in Github.`
 });
 
-logger.info('Initializing MCP server');
+logger.info(`Initializing MCP server`);
 
 server.tool(
     `search_spryker_packages`,
@@ -42,10 +42,28 @@ server.tool(
         organisations: z
             .array(z.string())
             .optional()
-            .describe(`Optional array of organisations to filter by [\"spryker\", \"spryker-eco\", \"spryker-sdk\", \"spryker-shop\"`)
+            .describe(`Optional array of organisations to filter by [\`spryker\`, \`spryker-eco\`, \`spryker-sdk\`, \`spryker-shop\``)
     },
     searchSprykerPackages
 );
+
+server.tool(
+    `search_spryker_package_code`,
+    `To search code in Spryker GitHub repositories`,
+    {
+        query: z
+            .string()
+            .max(120)
+            .min(5)
+            .describe(`The natural language query to search in code of Spryker packages`),
+        organisations: z
+            .array(z.string())
+            .optional()
+            .describe(`Optional array of organisations to filter by [\`spryker\`, \`spryker-eco\`, \`spryker-sdk\`, \`spryker-shop\``)
+    },
+    searchSprykerCode
+);
+
 
 const transport = new StdioServerTransport();
 

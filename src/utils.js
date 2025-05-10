@@ -1,6 +1,4 @@
-import {SPRYKER_ORGS} from './config.js';
-
-const validOrgs = SPRYKER_ORGS
+import {SPRYKER_ORGS} from "./config.js";
 
 /**
  * Normalize and prepare the searchSprykerPackages query
@@ -9,7 +7,7 @@ const validOrgs = SPRYKER_ORGS
  * @returns {string} - The normalized searchSprykerPackages query for GitHub
  */
 export const normalizeQuery = (query) => {
-    return query.trim().replace(/\s+/g, ' ');
+    return query.trim().replace(/\s+/g, ` `);
 };
 
 /**
@@ -20,13 +18,13 @@ export const normalizeQuery = (query) => {
  */
 export const validateOrganisations = (organisations = []) => {
     if (!organisations || organisations.length === 0) {
-        return validOrgs;
+        return SPRYKER_ORGS;
     }
 
-    const validatedOrgs = organisations.filter(org => validOrgs.includes(org));
+    const validatedOrgs = organisations.filter(org => SPRYKER_ORGS.includes(org));
 
     if (validatedOrgs.length === 0) {
-        return validOrgs;
+        return SPRYKER_ORGS;
     }
 
     return validatedOrgs;
@@ -41,18 +39,18 @@ export const validateOrganisations = (organisations = []) => {
  */
 export const formatResults = (repositories, organisations) => {
     if (!repositories || repositories.length === 0) {
-        return 'No repositories found matching your searchSprykerPackages criteria.';
+        return `No repositories found matching your searchSprykerPackages criteria.`;
     }
 
     let formattedText = `Found ${repositories.length} repositories:\n\n`;
 
     repositories.forEach((repo, index) => {
         formattedText += `${index + 1}. ${repo.name}\n`;
-        formattedText += `   Description: ${repo.description || 'No description available'}\n`;
+        formattedText += `   Description: ${repo.description || `No description available`}\n`;
         formattedText += `   URL: ${repo.html_url}\n\n`;
     });
 
-    formattedText += `Search performed across organizations: ${organisations.join(', ')}`;
+    formattedText += `Search performed across organizations: ${organisations.join(`, `)}`;
 
     return formattedText;
 };
@@ -70,9 +68,34 @@ export const buildGitHubQuery = (query, organisations) => {
 
     // Add organization filters
     if (organisations && organisations.length > 0) {
-        const orgFilters = organisations.map(org => `org:${org}`).join(' ');
+        const orgFilters = organisations.map(org => `org:${org}`).join(` `);
         githubQuery = `${githubQuery} ${orgFilters}`;
     }
 
     return githubQuery;
+};
+
+/**
+ * Format code search results into a readable text format
+ *
+ * @param {Object[]} codeResults - List of code search results
+ * @param {string[]} organisations - The organizations that were searched
+ * @returns {string} - Formatted text results
+ */
+export const formatCodeResults = (codeResults, organisations) => {
+    if (!codeResults || codeResults.length === 0) {
+        return `No code matches found for your search criteria.`;
+    }
+
+    let formattedText = `Found ${codeResults.length} code matches:\n\n`;
+
+    codeResults.forEach((item, index) => {
+        formattedText += `${index + 1}. ${item.name} (${item.repository.full_name})\n`;
+        formattedText += `   Path: ${item.path}\n`;
+        formattedText += `   URL: ${item.html_url}\n\n`;
+    });
+
+    formattedText += `Search performed across organizations: ${organisations.join(`, `)}`;
+
+    return formattedText;
 };

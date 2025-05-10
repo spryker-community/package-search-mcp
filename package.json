@@ -1,11 +1,11 @@
 {
-    "name": "spryker-project-semantic-search-mcp",
+    "name": "spryker-project-search-mcp",
     "version": "1.0.0",
-    "description": "Model Context Protocol server for Spryker Semantic Search",
+    "description": "Model Context Protocol server for Spryker Package Search",
     "main": "src/index.js",
     "type": "module",
     "bin": {
-        "spryker-project-semantic-search-mcp": "src/index.js"
+        "spryker-project-search-mcp": "src/index.js"
     },
     "scripts": {
         "start": "node src/index.js"

@@ -6,25 +6,25 @@
  * @module logger
  */
 
-import winston from 'winston';
-import path from 'path';
+import winston from "winston";
+import path from "path";
 
 /**
  * Creates and configures a Winston logger instance
  *
  * @param {Object} options - Logger configuration options
- * @param {string} options.serviceName - Name of the service (default: 'spryker-semantic-search')
+ * @param {string} options.serviceName - Name of the service (default: `spryker-semantic-search`)
  * @returns {winston.Logger} Configured Winston logger instance
  */
 export const createLogger = (options = {}) => {
     const {
-        LOG_LEVEL = process.env.LOG_LEVEL || 'info',
-        LOG_PATH = process.env.LOG_PATH || 'logs/app.log',
-        NODE_ENV = process.env.NODE_ENV || 'production'
+        LOG_LEVEL = process.env.LOG_LEVEL || `info`,
+        LOG_PATH = process.env.LOG_PATH || `logs/app.log`,
+        NODE_ENV = process.env.NODE_ENV || `production`
     } = process.env;
 
-    const serviceName = options.serviceName || 'spryker-semantic-search';
-    const isProduction = NODE_ENV === 'production';
+    const serviceName = options.serviceName || `spryker-semantic-search`;
+    const isProduction = NODE_ENV === `production`;
 
     // If in production, return a silent logger (no-op)
     if (isProduction) {
@@ -36,15 +36,15 @@ export const createLogger = (options = {}) => {
     // Define formats for development or non-production
     const consoleFormat = winston.format.combine(
         winston.format.colorize(),
-        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        winston.format.timestamp({ format: `YYYY-MM-DD HH:mm:ss` }),
         winston.format.printf(({ level, message, timestamp, ...meta }) => {
-            const metaStr = Object.keys(meta).length ? `\n${JSON.stringify(meta, null, 2)}` : '';
+            const metaStr = Object.keys(meta).length ? `\n${JSON.stringify(meta, null, 2)}` : ``;
             return `${timestamp} [${level}] ${serviceName}: ${message}${metaStr}`;
         })
     );
 
     const fileFormat = winston.format.combine(
-        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        winston.format.timestamp({ format: `YYYY-MM-DD HH:mm:ss` }),
         winston.format.errors({ stack: true }),
         winston.format.splat(),
         winston.format.json()
@@ -73,7 +73,7 @@ export const createLogger = (options = {}) => {
         exitOnError: false
     });
 
-    logger.debug('Logger initialized', {
+    logger.debug(`Logger initialized`, {
         level: LOG_LEVEL,
         environment: NODE_ENV,
         serviceName
