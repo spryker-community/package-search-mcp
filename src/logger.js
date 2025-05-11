@@ -1,5 +1,5 @@
 /**
- * Logger Configuration for Spryker Semantic Search
+ * Logger Configuration for Spryker Package Search
  *
  * In production, no logs will be written.
  *
@@ -14,7 +14,7 @@ import * as process from "node:process";
  * Creates and configures a Winston logger instance
  *
  * @param {Object} options - Logger configuration options
- * @param {string} options.serviceName - Name of the service (default: `spryker-semantic-search`)
+ * @param {string} options.serviceName - Name of the service (default: `spryker-package-search`)
  * @returns {winston.Logger} Configured Winston logger instance
  */
 export const createLogger = (options = {}) => {
@@ -24,7 +24,7 @@ export const createLogger = (options = {}) => {
         NODE_ENV = process.env.NODE_ENV || `production`
     } = process.env;
 
-    const serviceName = options.serviceName || `spryker-semantic-search`;
+    const serviceName = options.serviceName || `spryker-package-search`;
     const isProduction = NODE_ENV === `production`;
 
     // If in production, return a silent logger (no-op)
@@ -82,16 +82,3 @@ export const createLogger = (options = {}) => {
 
     return logger;
 };
-
-/**
- * Gets a child logger with additional metadata
- *
- * @param {winston.Logger} parentLogger - The parent logger instance
- * @param {Object} metadata - Additional metadata to include with all log entries
- * @returns {winston.Logger} Child logger instance
- */
-export const getChildLogger = (parentLogger, metadata = {}) => {
-    return parentLogger.child(metadata);
-};
-
-export default createLogger;

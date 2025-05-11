@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Spryker Project Semantic Search Tool
+ * Spryker Project Search Tool
  *
  * This file initializes a Model Context Protocol server that provides
- * semantic searchSprykerPackages capabilities for the Spryker codebase.
+ * search Spryker Packages capabilities for the Spryker codebase.
  * The tool searches GitHub repositories for Spryker packages based on
  * the provided query and organization filters.
  *
