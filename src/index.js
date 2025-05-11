@@ -17,7 +17,11 @@ import {StdioServerTransport} from "@modelcontextprotocol/sdk/server/stdio.js";
 import {z} from "zod";
 import dotenv from "dotenv";
 import {createLogger} from "./logger.js";
-import {searchSprykerPackages, searchSprykerCode} from "./tools.js";
+import {
+    searchSprykerPackages,
+    searchSprykerCode,
+    searchSprykerDocs,
+} from "./tools.js";
 
 dotenv.config();
 
@@ -65,6 +69,18 @@ server.tool(
     searchSprykerCode
 );
 
+server.tool(
+    `search_spryker_documentation_path`,
+    `To search Spryker documentation path urls by query`,
+    {
+        query: z
+            .string()
+            .max(120)
+            .min(5)
+            .describe(`The natural language query to search Spryker documentation path url`)
+    },
+    searchSprykerDocs
+);
 
 const transport = new StdioServerTransport();
 

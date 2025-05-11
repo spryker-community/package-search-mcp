@@ -1,4 +1,4 @@
-import { searchSprykerPackages, searchSprykerCode } from '../src/tools.js';
+import { searchSprykerPackages, searchSprykerCode, searchSprykerDocs } from '../src/tools.js';
 import * as utils from '../src/utils.js';
 import * as githubClient from '../src/githubClient.js';
 
@@ -123,6 +123,69 @@ describe('searchSprykerCode', () => {
             content: [{
                 type: 'text',
                 text: 'Formatted code results'
+            }]
+        });
+    });
+});
+
+describe('searchSprykerDocs', () => {
+    beforeEach(() => {
+        // Reset all mocks before each test
+        jest.clearAllMocks();
+
+        // Setup default mock implementations
+        utils.normalizeQuery.mockImplementation(query => query);
+        utils.formatDocsResults.mockReturnValue('Formatted docs results');
+    });
+
+    test('should return formatted docs results when search is successful', async () => {
+        // Arrange
+        const mockDocsResults = {
+            items: [
+                { 
+                    name: 'guide.md', 
+                    path: 'docs/202410.0/guide.md', 
+                    html_url: 'https://github.com/spryker/spryker-docs/blob/main/docs/202410.0/guide.md',
+                    repository: { full_name: 'spryker/spryker-docs' }
+                }
+            ],
+            total_count: 1
+        };
+
+        githubClient.searchGitHubCode.mockResolvedValue(mockDocsResults);
+
+        // Act
+        const result = await searchSprykerDocs({ 
+            query: 'test-query'
+        });
+
+        // Assert
+        expect(utils.normalizeQuery).toHaveBeenCalledWith('test-query');
+        expect(githubClient.searchGitHubCode).toHaveBeenCalledWith('test-query repo:spryker/spryker-docs path:docs/ in:file extension:md');
+        expect(utils.formatDocsResults).toHaveBeenCalledWith(mockDocsResults.items);
+        expect(result).toEqual({
+            content: [{
+                type: 'text',
+                text: 'Formatted docs results'
+            }]
+        });
+    });
+
+    test('should handle errors and return error message', async () => {
+        // Arrange
+        const errorMessage = 'API error';
+        githubClient.searchGitHubCode.mockRejectedValue(new Error(errorMessage));
+
+        // Act
+        const result = await searchSprykerDocs({ 
+            query: 'test-query'
+        });
+
+        // Assert
+        expect(result).toEqual({
+            content: [{
+                type: 'text',
+                text: `Error performing docs search: ${errorMessage}`
             }]
         });
     });

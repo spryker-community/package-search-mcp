@@ -1,5 +1,6 @@
 import {SPRYKER_ORGS} from "./config.js";
 
+
 /**
  * Normalize and prepare the searchSprykerPackages query
  *
@@ -99,3 +100,26 @@ export const formatCodeResults = (codeResults, organisations) => {
 
     return formattedText;
 };
+
+/**
+ * Format documentation search results into a readable text format
+ *
+ * @param {Object[]} docsResults - List of documentation search results
+ * @returns {string} - Formatted text results
+ */
+export const formatDocsResults = (docsResults) => {
+    if (!docsResults || docsResults.length === 0) {
+        return `No documentation matches found for your search criteria.`;
+    }
+
+    const filteredItems = docsResults.filter(item => item.path.includes('202410.0'));
+
+    let formattedText = `Found the next paths to Spryker documentation:\n\n`;
+
+    filteredItems.forEach((item) => {
+        formattedText += `   Path: https://docs.spryker.com/${item.path.replace(/\.md$/, '')}\n`;
+    });
+
+    return formattedText;
+}
+

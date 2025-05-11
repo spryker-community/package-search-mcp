@@ -16,6 +16,7 @@ This tool allows you to search Spryker packages or their code contents using nat
 ---
 
 ![Example with Claude](doc/claude-ex.png)
+![Example with Claude for docs](doc/claude-ex-2.png)
 
 ## 🚀 Installation
 
@@ -94,6 +95,12 @@ Parameters:
 
 - organisations (array of strings, optional): List of GitHub orgs to filter by. Example:
 ["spryker", "spryker-eco", "spryker-sdk", "spryker-shop"]
+- 
+#### search_spryker_documentation_path
+Searches for Spryker documentation links.
+
+Parameters:
+- query (string, required): The natural language query to search Spryker documentation links.
 
 ## 🧩 Architecture
 Built with Model Context Protocol SDK
