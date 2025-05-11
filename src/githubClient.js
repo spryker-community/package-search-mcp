@@ -1,5 +1,6 @@
 import {createLogger} from "./logger.js";
 import {GITHUB_API_URL, GITHUB_SEARCH_REPOS_ENDPOINT, GITHUB_SEARCH_CODE_ENDPOINT, GITHUB_SEARCH_PACKAGE_LIMIT} from "./config.js";
+import * as process from "node:process";
 
 import axios from "axios";
 

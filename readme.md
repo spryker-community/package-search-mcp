@@ -66,6 +66,16 @@ You can add as many servers as projects, just by configuring them properly using
 npx @modelcontextprotocol/inspector npx node src/index.js
 ```
 
+## Test
+
+```bash
+npm test
+```
+
+```bash
+npx eslint . --fix
+```
+
 ## 🧠 Available Tools
 #### search_spryker_packages
 Searches for Spryker packages based on a natural language query. 

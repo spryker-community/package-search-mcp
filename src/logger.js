@@ -8,6 +8,7 @@
 
 import winston from "winston";
 import path from "path";
+import * as process from "node:process";
 
 /**
  * Creates and configures a Winston logger instance
