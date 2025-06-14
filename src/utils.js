@@ -112,12 +112,11 @@ export const formatDocsResults = (docsResults) => {
         return `No documentation matches found for your search criteria.`;
     }
 
-    const filteredItems = docsResults.filter(item => item.path.includes('202410.0'));
+    let formattedText = `Found the next Spryker documentations:\n\n`;
 
-    let formattedText = `Found the next paths to Spryker documentation:\n\n`;
-
-    filteredItems.forEach((item) => {
-        formattedText += `   Path: https://docs.spryker.com/${item.path.replace(/\.md$/, '')}\n`;
+    docsResults.forEach((item) => {
+        formattedText += `Path: ${item.url}\n`;
+        formattedText += '```text\n' + item.text + '\n```\n\n';
     });
 
     return formattedText;

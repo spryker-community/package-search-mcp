@@ -6,8 +6,10 @@ import {
     normalizeQuery,
     validateOrganisations,
 } from "./utils.js";
-import {searchGitHubRepositories, searchGitHubCode} from "./githubClient.js";
+import {searchGitHubRepositories, searchGitHubCode, getFileContentFromGitHubSprykerDocs} from "./githubClient.js";
 import {createLogger} from "./logger.js";
+import {algoliaSearch} from "./algoliaSearchClient.js";
+
 
 const logger = createLogger();
 
@@ -105,27 +107,32 @@ export const searchSprykerDocs = async ({query}) => {
     try {
         const normalizedQuery = normalizeQuery(query);
 
-        // Fixed search scope: only spryker/spryker-docs repository with MD files
-        const githubQuery = `${normalizedQuery} repo:spryker/spryker-docs path:docs/ in:file extension:md`;
+        const results = await algoliaSearch({query: normalizedQuery});
 
-        logger.info(`Performing GitHub docs search`, { query: githubQuery });
+        logger.info(`Algolia have found ${results.length} results.`, { query });
 
-        const searchResults = await searchGitHubCode(githubQuery);
+        const contents = await Promise.all(
+            results.map(async (hit) => {
+                const url = hit.url
+                    .replace(
+                    /^https:\/\/docs\.spryker\.com/, '')
+                    .replace('.html', '.md');
 
-        logger.info(`GitHub docs search completed`, {
-            resultCount: searchResults.items ? searchResults.items.length : 0,
-            totalCount: searchResults.total_count
-        });
-
-        // Format results similar to code search but with a different header
-        const formattedText = formatDocsResults(searchResults.items);
-        logger.debug(`Docs search results formatted for display`);
+                try {
+                    const content = await getFileContentFromGitHubSprykerDocs(url);
+                    return { url: hit.url, text: content };
+                } catch (error) {
+                    logger.error(`Failed to fetch ${url}: ${error.message}`);
+                    return { url, text: null, error: error.message };
+                }
+            })
+        );
 
         return {
             content: [{
                 type: `text`,
-                text: formattedText
-            }]
+                text: formatDocsResults(contents),
+            }],
         };
     } catch (error) {
         logger.error(`Error in docs search: ${error.message}`, {

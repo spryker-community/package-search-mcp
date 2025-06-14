@@ -28,9 +28,9 @@ dotenv.config();
 const logger = createLogger();
 
 const server = new McpServer({
-    name: `SprykerPackageSearch`,
-    version: `1.0.0`,
-    description: `The tool provides search capabilities for the Spryker packages in Github.`
+    name: `SprykerSearch`,
+    version: `1.1.0`,
+    description: `The tool provides search capabilities for the Spryker documentation and packages in Github.`
 });
 
 logger.info(`Initializing MCP server`);
@@ -70,14 +70,14 @@ server.tool(
 );
 
 server.tool(
-    `search_spryker_documentation_path`,
-    `To search Spryker documentation path urls by query`,
+    `search_spryker_documentation`,
+    `To search in Spryker documentation by query`,
     {
         query: z
             .string()
             .max(120)
             .min(5)
-            .describe(`The natural language query to search Spryker documentation path url`)
+            .describe(`The natural language query to search Spryker documentation`)
     },
     searchSprykerDocs
 );

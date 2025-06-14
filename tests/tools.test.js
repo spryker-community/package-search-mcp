@@ -1,10 +1,14 @@
 import { searchSprykerPackages, searchSprykerCode, searchSprykerDocs } from '../src/tools.js';
 import * as utils from '../src/utils.js';
 import * as githubClient from '../src/githubClient.js';
+import * as algolia from '../src/algoliaSearchClient.js';
+
 
 // Mock the dependencies
 jest.mock('../src/utils.js');
 jest.mock('../src/githubClient.js');
+jest.mock('../src/algoliaSearchClient.js');
+
 jest.mock('../src/logger.js', () => ({
     createLogger: () => ({
         info: jest.fn(),
@@ -130,39 +134,38 @@ describe('searchSprykerCode', () => {
 
 describe('searchSprykerDocs', () => {
     beforeEach(() => {
-        // Reset all mocks before each test
         jest.clearAllMocks();
 
-        // Setup default mock implementations
         utils.normalizeQuery.mockImplementation(query => query);
         utils.formatDocsResults.mockReturnValue('Formatted docs results');
     });
 
     test('should return formatted docs results when search is successful', async () => {
         // Arrange
-        const mockDocsResults = {
-            items: [
-                { 
-                    name: 'guide.md', 
-                    path: 'docs/202410.0/guide.md', 
-                    html_url: 'https://github.com/spryker/spryker-docs/blob/main/docs/202410.0/guide.md',
-                    repository: { full_name: 'spryker/spryker-docs' }
-                }
-            ],
-            total_count: 1
-        };
+        const mockHits = [
+            {
+                url: 'https://docs.spryker.com/docs/pbc/all/some-page.html',
+            }
+        ];
 
-        githubClient.searchGitHubCode.mockResolvedValue(mockDocsResults);
+        algolia.algoliaSearch.mockResolvedValue(mockHits);
+        githubClient.getFileContentFromGitHubSprykerDocs.mockResolvedValue('# Some Markdown Content');
 
         // Act
-        const result = await searchSprykerDocs({ 
-            query: 'test-query'
-        });
+        const result = await searchSprykerDocs({ query: 'test-query' });
 
         // Assert
         expect(utils.normalizeQuery).toHaveBeenCalledWith('test-query');
-        expect(githubClient.searchGitHubCode).toHaveBeenCalledWith('test-query repo:spryker/spryker-docs path:docs/ in:file extension:md');
-        expect(utils.formatDocsResults).toHaveBeenCalledWith(mockDocsResults.items);
+        expect(algolia.algoliaSearch).toHaveBeenCalledWith({ query: 'test-query' });
+        expect(githubClient.getFileContentFromGitHubSprykerDocs).toHaveBeenCalledWith(
+            '/docs/pbc/all/some-page.md'
+        );
+        expect(utils.formatDocsResults).toHaveBeenCalledWith([
+            {
+                url: 'https://docs.spryker.com/docs/pbc/all/some-page.html',
+                text: '# Some Markdown Content'
+            }
+        ]);
         expect(result).toEqual({
             content: [{
                 type: 'text',
@@ -171,17 +174,44 @@ describe('searchSprykerDocs', () => {
         });
     });
 
-    test('should handle errors and return error message', async () => {
-        // Arrange
-        const errorMessage = 'API error';
-        githubClient.searchGitHubCode.mockRejectedValue(new Error(errorMessage));
+    test('should return partial results when one fetch fails', async () => {
+        const mockHits = [
+            {
+                url: 'https://docs.spryker.com/docs/pbc/all/first.html',
+            },
+            {
+                url: 'https://docs.spryker.com/docs/pbc/all/second.html',
+            }
+        ];
+
+        algolia.algoliaSearch.mockResolvedValue(mockHits);
+
+        githubClient.getFileContentFromGitHubSprykerDocs
+            .mockImplementationOnce(() => Promise.resolve('# First doc'))
+            .mockImplementationOnce(() => Promise.reject(new Error('Not Found')));
 
         // Act
-        const result = await searchSprykerDocs({ 
-            query: 'test-query'
-        });
+        await searchSprykerDocs({ query: 'test-query' });
 
-        // Assert
+        expect(utils.formatDocsResults).toHaveBeenCalledWith([
+            {
+                url: 'https://docs.spryker.com/docs/pbc/all/first.html',
+                text: '# First doc'
+            },
+            {
+                "error": "Not Found",
+                "text": null,
+                "url": "/docs/pbc/all/second.md",
+            }
+        ]);
+    });
+
+    test('should handle errors and return error message', async () => {
+        const errorMessage = 'Algolia failed';
+        algolia.algoliaSearch.mockRejectedValue(new Error(errorMessage));
+
+        const result = await searchSprykerDocs({ query: 'test-query' });
+
         expect(result).toEqual({
             content: [{
                 type: 'text',

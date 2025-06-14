@@ -1,21 +1,25 @@
-# Spryker Package Search Tool
+# Spryker Search Tool
 
-A command-line tool that initializes a Model Context Protocol (MCP) server to provide **package search capabilities** for Spryker GitHub repositories.
+A command-line tool that initializes a Model Context Protocol (MCP) server to provide **spryker search capabilities** for Spryker GitHub repositories.
 
-This tool allows you to search Spryker packages or their code contents using natural language queries. It supports filtering by specific GitHub organizations.
+This tool allows you to search Spryker packages and documentation or their code contents using natural language queries. It supports filtering by specific GitHub organizations.
 
 ---
 
 ## ✨ Features
 
 - Search for Spryker packages on GitHub
+- Search for Spryker public documentation https://docs.spryker.com/
 - Code-level search across Spryker repositories
-- Support for filtering by organization (`spryker`, `spryker-eco`, `spryker-sdk`, `spryker-shop`)
+- Support for filtering by organization (`spryker`, `spryker-eco`, `spryker-sdk`, `spryker-shop`, `spryker-community`)
 - Runs as an MCP server using stdio transport
 
 ---
 
 ![Example with Claude](doc/claude-ex.png)
+
+https://5ire.app/
+
 ![Example with Claude for docs](doc/claude-ex-2.png)
 
 ## 🚀 Installation
@@ -85,7 +89,7 @@ Parameters:
 - query (string, required): The natural language query to search GitHub repositories.
 
 - organisations (array of strings, optional): List of GitHub orgs to filter by. Example:
-["spryker", "spryker-eco", "spryker-sdk", "spryker-shop"]
+["spryker", "spryker-eco", "spryker-sdk", "spryker-shop", "spryker-community"]
 
 #### search_spryker_package_code
 Searches for PHP code inside Spryker GitHub repositories.
@@ -94,13 +98,13 @@ Parameters:
 - query (string, required): The natural language query to search within code.
 
 - organisations (array of strings, optional): List of GitHub orgs to filter by. Example:
-["spryker", "spryker-eco", "spryker-sdk", "spryker-shop"]
+["spryker", "spryker-eco", "spryker-sdk", "spryker-shop", "spryker-community"]
 - 
-#### search_spryker_documentation_path
-Searches for Spryker documentation links.
+#### search_spryker_documentation
+Searches for Spryker documentation.
 
 Parameters:
-- query (string, required): The natural language query to search Spryker documentation links.
+- query (string, required): The natural language query to search Spryker documentation.
 
 ## 🧩 Architecture
 Built with Model Context Protocol SDK

@@ -1,8 +1,8 @@
 import {createLogger} from "./logger.js";
-import {GITHUB_API_URL, GITHUB_SEARCH_REPOS_ENDPOINT, GITHUB_SEARCH_CODE_ENDPOINT, GITHUB_SEARCH_PACKAGE_LIMIT} from "./config.js";
+import {GITHUB_API_URL, GITHUB_SEARCH_REPOS_ENDPOINT, GITHUB_SEARCH_CODE_ENDPOINT, GITHUB_SEARCH_PACKAGE_LIMIT, GITHUB_SPRYKER_DOCS_CONTENT_ENDPOINT} from "./config.js";
 import * as process from "node:process";
-
 import axios from "axios";
+import { Buffer } from "buffer";
 
 const logger = createLogger();
 
@@ -109,3 +109,24 @@ export const searchGitHubCode = async (query) => {
         throw new Error(`GitHub API code search request failed: ${error.message}`);
     }
 };
+
+
+/**
+ * Search Spryker Docs GitHub files using Axios
+ *
+ * @param {string} path - The Spryker documentation path
+ * @returns {Promise<Object>} - GitHub API response
+ */
+export const getFileContentFromGitHubSprykerDocs = async (path) => {
+    const github = getGitHubClient();
+
+    try {
+        const response = await github.get(`${GITHUB_SPRYKER_DOCS_CONTENT_ENDPOINT}/${path}`);
+
+        return Buffer.from(response?.data?.content , 'base64').toString('utf-8');
+    } catch (error) {
+        logger.error(`Failed to fetch file content: ${error.response?.status} ${error.response?.statusText}`);
+        throw error;
+    }
+};
+
