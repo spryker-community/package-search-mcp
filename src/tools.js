@@ -113,10 +113,14 @@ export const searchSprykerDocs = async ({query}) => {
 
         const contents = await Promise.all(
             results.map(async (hit) => {
-                const url = hit.url
+                let url = hit.url
                     .replace(
                     /^https:\/\/docs\.spryker\.com/, '')
-                    .replace('.html', '.md');
+                    .replace('.html', '');
+
+                if (!url.endsWith('.md')) {
+                    url += '.md';
+                }
 
                 try {
                     const content = await getFileContentFromGitHubSprykerDocs(url);

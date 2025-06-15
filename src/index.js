@@ -82,6 +82,9 @@ server.tool(
     searchSprykerDocs
 );
 
+// let res = await searchSprykerDocs({query: `slow publish queue`})
+
+
 const transport = new StdioServerTransport();
 
 try {

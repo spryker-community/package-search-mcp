@@ -119,9 +119,13 @@ export const searchGitHubCode = async (query) => {
  */
 export const getFileContentFromGitHubSprykerDocs = async (path) => {
     const github = getGitHubClient();
-
     try {
-        const response = await github.get(`${GITHUB_SPRYKER_DOCS_CONTENT_ENDPOINT}/${path}`);
+        const gitHubPath = GITHUB_SPRYKER_DOCS_CONTENT_ENDPOINT + path;
+        const response = await github.get(gitHubPath);
+
+        if (response?.status !== 200) {
+            return '';
+        }
 
         return Buffer.from(response?.data?.content , 'base64').toString('utf-8');
     } catch (error) {
