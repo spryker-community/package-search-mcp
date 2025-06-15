@@ -115,7 +115,7 @@ export const searchGitHubCode = async (query) => {
  * Search Spryker Docs GitHub files using Axios
  *
  * @param {string} path - The Spryker documentation path
- * @returns {Promise<Object>} - GitHub API response
+ * @returns {Promise<Object>} - GitHub API response content
  */
 export const getFileContentFromGitHubSprykerDocs = async (path) => {
     const github = getGitHubClient();

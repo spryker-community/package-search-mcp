@@ -77,13 +77,18 @@ server.tool(
             .string()
             .max(120)
             .min(5)
-            .describe(`The natural language query to search Spryker documentation`)
+            .describe(`The natural language query to search Spryker documentation`),
+        maxTokensSize: z
+            .number()
+            .min(16000)
+            .optional()
+            .default(64000)
+            .describe(`The maximum number of tokens to return to prevent lost context.` +
+                `It is recommended a half of context window and minium 16000.`
+            )
     },
     searchSprykerDocs
 );
-
-// let res = await searchSprykerDocs({query: `slow publish queue`})
-
 
 const transport = new StdioServerTransport();
 

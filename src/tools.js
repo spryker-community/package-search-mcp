@@ -9,6 +9,7 @@ import {
 import {searchGitHubRepositories, searchGitHubCode, getFileContentFromGitHubSprykerDocs} from "./githubClient.js";
 import {createLogger} from "./logger.js";
 import {algoliaSearch} from "./algoliaSearchClient.js";
+import { encode } from "gpt-3-encoder";
 
 
 const logger = createLogger();
@@ -101,7 +102,7 @@ export const searchSprykerCode = async ({query, organisations}) => {
     }
 }
 
-export const searchSprykerDocs = async ({query}) => {
+export const searchSprykerDocs = async ({query, maxTokensSize}) => {
     logger.info(`Received searchSprykerDocs request`, { query });
 
     try {
@@ -110,6 +111,8 @@ export const searchSprykerDocs = async ({query}) => {
         const results = await algoliaSearch({query: normalizedQuery});
 
         logger.info(`Algolia have found ${results.length} results.`, { query });
+
+        let tokens = 0;
 
         const contents = await Promise.all(
             results.map(async (hit) => {
@@ -123,7 +126,13 @@ export const searchSprykerDocs = async ({query}) => {
                 }
 
                 try {
-                    const content = await getFileContentFromGitHubSprykerDocs(url);
+
+                    let content = await getFileContentFromGitHubSprykerDocs(url);
+                    tokens += encode(content).length;
+                    if (tokens > maxTokensSize) {
+                        content = hit.title || '';
+                    }
+
                     return { url: hit.url, text: content };
                 } catch (error) {
                     logger.error(`Failed to fetch ${url}: ${error.message}`);
